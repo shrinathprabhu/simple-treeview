@@ -1,19 +1,34 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <tree-view :items="items"></tree-view>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import TreeView from "./components/tree-view.vue";
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    TreeView,
+  },
+  data: () => ({
+    items: [],
+  }),
+  computed: {},
+  mounted: async function () {
+    let response = await this.$axios.get(
+      "http://www.mocky.io/v2/5cff79fc3200007100eac68f"
+    );
+    if (response.status === 200) {
+      let responseData = response.data.responseData;
+      if (responseData instanceof Array) {
+        this.items = responseData;
+      } else {
+        this.items = [responseData];
+      }
+    }
+  },
+};
 </script>
 
 <style>
@@ -21,7 +36,6 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 60px;
 }
