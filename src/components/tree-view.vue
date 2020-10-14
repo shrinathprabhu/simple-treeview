@@ -76,6 +76,7 @@ export default {
       let selectedNone = noneIndex === -1 ? true : false;
       this.$emit("notify", {
         parentNode: this.parentNode,
+        parentIndex: this.parentIndex,
         selection,
         selectedAll,
         selectedNone,
@@ -89,6 +90,11 @@ export default {
       if (e.selectedAll) {
         document.getElementById(e.parentNode).checked = true;
         document.getElementById(e.parentNode).indeterminate = false;
+        this.$set(this.expansions, e.parentIndex, {
+          selection: true,
+          value: this.expansions[e.parentIndex].value,
+          symbol: this.expansions[e.parentIndex].symbol,
+        });
       } else if (e.selectedNone && !e.indeterminate) {
         document.getElementById(e.parentNode).checked = false;
         document.getElementById(e.parentNode).indeterminate = false;
