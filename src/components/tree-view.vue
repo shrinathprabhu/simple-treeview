@@ -24,8 +24,9 @@
         <tree-view
           v-if="expansions[index].value"
           :items="item.children"
-          :selectAllChildren="expansions[index].seletion"
+          v-bind:selectAllChildren="expansions[index].selection"
           :parentNode="item.source + index"
+          :parentIndex="index"
           @notify="notification"
         ></tree-view>
       </li>
@@ -51,7 +52,7 @@ label {
 <script>
 export default {
   name: "tree-view",
-  props: ["items", "selectAllChildren", "parentNode"],
+  props: ["items", "selectAllChildren", "parentNode", "parentIndex"],
   data: () => ({
     expansions: [],
     dataPopulated: false,
@@ -70,26 +71,32 @@ export default {
       let index = this.expansions.findIndex(
         (e) => e.selection == false || e.selection == undefined
       );
+      let noneIndex = this.expansions.findIndex((e) => e.selection == true);
       let selectedAll = index === -1 ? true : false;
+      let selectedNone = noneIndex === -1 ? true : false;
       this.$emit("notify", {
         parentNode: this.parentNode,
         selection,
         selectedAll,
+        selectedNone,
+        indeterminate:
+          selection || (!selectedAll && !selectedNone) ? true : false,
       });
     },
 
     notification(e) {
+      console.log(e);
       if (e.selectedAll) {
         document.getElementById(e.parentNode).checked = true;
-        this.notifyParent(true);
-      } else if (e.selection) {
-        document.getElementById(e.parentNode).indeterminate = true;
-        this.notifyParent(true);
-      } else {
+        document.getElementById(e.parentNode).indeterminate = false;
+      } else if (e.selectedNone && !e.indeterminate) {
         document.getElementById(e.parentNode).checked = false;
         document.getElementById(e.parentNode).indeterminate = false;
-        this.notifyParent(false);
+      } else {
+        document.getElementById(e.parentNode).checked = false;
+        document.getElementById(e.parentNode).indeterminate = true;
       }
+      this.notifyParent(e.selection);
     },
   },
   mounted() {
@@ -107,7 +114,15 @@ export default {
   },
   watch: {
     selectAllChildren: function (newVal) {
-      console.log("Changes happend", newVal, this.items.length);
+      this.items.forEach((item, index) => {
+        document.getElementById(item.source + index).indeterminate = false;
+        document.getElementById(item.source + index).checked = newVal;
+        this.$set(this.expansions, index, {
+          symbol: this.expansions[index].symbol,
+          value: this.expansions[index].value,
+          selection: newVal,
+        });
+      });
     },
   },
 };
