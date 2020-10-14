@@ -1,8 +1,12 @@
 // https://docs.cypress.io/api/introduction/api.html
 
-describe('My First Test', () => {
-  it('Visits the app root url', () => {
-    cy.visit('/')
-    cy.contains('h1', 'Welcome to Your Vue.js App')
-  })
-})
+describe('E2E testing', done => {
+  it('Contains ul, .clickable and checkbox after data loads', () => {
+    cy.visit('/');
+    setTimeout(() => {
+      cy.contains('ul');
+      cy.contains('.clickable');
+      cy.contains('input[type=checkbox]');
+    }, 3000);
+  });
+});
