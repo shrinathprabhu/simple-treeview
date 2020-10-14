@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <tree-view :items="items"></tree-view>
+    <tree-view v-if="items.length" :items="items"></tree-view>
   </div>
 </template>
 
@@ -15,7 +15,7 @@ export default {
     items: [],
   }),
   computed: {},
-  mounted: async function () {
+  created: async function () {
     let response = await this.$axios.get(
       "http://www.mocky.io/v2/5cff79fc3200007100eac68f"
     );

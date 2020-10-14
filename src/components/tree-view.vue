@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul>
+    <ul v-if="dataPopulated">
       <li v-for="(item, index) in items" :key="item.source + index">
         <div>
           <span
@@ -10,7 +10,14 @@
             >{{ expansions[index].symbol }}</span
           >
           <span v-else style="margin-right: 15px">&nbsp;</span>
-          <span>{{ item.source }}</span>
+          <input
+            class="children-selected"
+            type="checkbox"
+            :id="item.source + index"
+          />
+          <label :for="item.source + index">
+            {{ item.source }}
+          </label>
         </div>
         <tree-view
           v-show="expansions[index].value"
@@ -29,6 +36,16 @@ ul {
   cursor: pointer;
   margin-right: 5px;
 }
+
+input,
+label {
+  cursor: pointer;
+}
+
+.children-selected:checked::after {
+  content: \f054;
+  color: white;
+}
 </style>
 
 <script>
@@ -37,6 +54,7 @@ export default {
   props: ["items"],
   data: () => ({
     expansions: [],
+    dataPopulated: false,
   }),
   computed: {},
   methods: {
@@ -45,16 +63,17 @@ export default {
         symbol: this.expansions[index].symbol === "+" ? "-" : "+",
         value: !this.expansions[index].value,
       });
-      console.log(this.expansions);
     },
   },
-  created: function () {
-    this.items.forEach(() => {
-      this.expansions.push({
+  mounted() {
+    this.items.forEach((item, index) => {
+      this.expansions.push();
+      this.$set(this.expansions, index, {
         symbol: "+",
         value: false,
       });
     });
+    this.dataPopulated = true;
   },
 };
 </script>
