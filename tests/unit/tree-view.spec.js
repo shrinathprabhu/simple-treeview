@@ -1,11 +1,11 @@
-import { shallowMount, mount } from '@vue/test-utils';
-import TreeView from '../../src/components/tree-view.vue';
+import { shallowMount, mount } from "@vue/test-utils";
+import TreeView from "../../src/components/tree-view.vue";
 
 let noChildItems = [
   {
     source: "AAA",
-    children: []
-  }
+    children: [],
+  },
 ];
 
 let singleChildItems = [
@@ -14,27 +14,27 @@ let singleChildItems = [
     children: [
       {
         source: "BBB",
-        children: []
-      }
-    ]
-  }
+        children: [],
+      },
+    ],
+  },
 ];
 
-test('Is a vue instance', () => {
+test("Is a vue instance", () => {
   let wrapper = mount(TreeView, {
     propsData: {
-      items: noChildItems
-    }
+      items: noChildItems,
+    },
   });
 
   expect(wrapper.vm).toBeTruthy();
 });
 
-test('Contains source label', done => {
+test("Contains source label", (done) => {
   let wrapper = shallowMount(TreeView, {
     propsData: {
-      items: noChildItems
-    }
+      items: noChildItems,
+    },
   });
 
   setTimeout(() => {
@@ -43,11 +43,11 @@ test('Contains source label', done => {
   }, 1);
 });
 
-test('Contains checkbox', done => {
+test("Contains checkbox", (done) => {
   let wrapper = shallowMount(TreeView, {
     propsData: {
-      items: noChildItems
-    }
+      items: noChildItems,
+    },
   });
 
   setTimeout(() => {
@@ -56,66 +56,73 @@ test('Contains checkbox', done => {
   }, 1);
 });
 
-test('Contains + button if children exist', done => {
+test("Contains + button if children exist", (done) => {
   let wrapper = shallowMount(TreeView, {
     propsData: {
-      items: singleChildItems
-    }
+      items: singleChildItems,
+    },
   });
 
   setTimeout(() => {
-    expect(wrapper.html()).toContain("+");
+    expect(wrapper.html()).toContain('<span class="clickable">+</span>');
     done();
   }, 1);
 });
 
-test('Does not contain + button if children doesn\'t exist', done => {
+test("Does not contain + button if children doesn't exist", (done) => {
   let wrapper = shallowMount(TreeView, {
     propsData: {
-      items: noChildItems
-    }
+      items: noChildItems,
+    },
   });
 
   setTimeout(() => {
-    expect(wrapper.html()).not.toContain("+");
+    expect(wrapper.html()).not.toContain('<span class="clickable">+</span>');
     done();
   }, 1);
 });
 
-test('Expands the tree when + is clicked and children are shown. Also + is replace with -', done => {
+test("Expands the tree when + is clicked and children are shown. Also + is replace with -", (done) => {
   let wrapper = shallowMount(TreeView, {
     propsData: {
-      items: singleChildItems
-    }
+      items: singleChildItems,
+    },
   });
 
   setTimeout(() => {
     // wrapper.setMethods({
     //   toggle: jest.fn()
     // });
-    wrapper.find(".clickable").trigger('click');
-    expect(wrapper.html()).toContain("-");
-    setTimeout(() => {
-      expect(wrapper.find("tree-view-stub").isVisible()).toBeTruthy();
-      done();
-    });
+    wrapper
+      .find(".clickable")
+      .trigger("click")
+      .then(() => {
+        expect(wrapper.html()).toContain('<span class="clickable">−</span>');
+        expect(wrapper.find("tree-view-stub").isVisible()).toBeTruthy();
+        done();
+      })
+      .catch((e) => {
+        throw e;
+      });
   }, 1);
 });
 
-test('Children aren\'t visible until + is pressed', done => {
+test("Children aren't visible until + is pressed", (done) => {
   let wrapper = shallowMount(TreeView, {
     propsData: {
-      items: singleChildItems
-    }
+      items: singleChildItems,
+    },
   });
 
   setTimeout(() => {
     expect(wrapper.find("tree-view-stub").exists()).toBeFalsy();
-    wrapper.find(".clickable").trigger('click');
-    setTimeout(() => {
-      expect(wrapper.find("tree-view-stub").exists()).toBeTruthy();
-      expect(wrapper.find("tree-view-stub").isVisible()).toBeTruthy();
-      done();
-    }, 1);
+    wrapper
+      .find(".clickable")
+      .trigger("click")
+      .then(() => {
+        expect(wrapper.find("tree-view-stub").exists()).toBeTruthy();
+        expect(wrapper.find("tree-view-stub").isVisible()).toBeTruthy();
+        done();
+      });
   }, 1);
 });
